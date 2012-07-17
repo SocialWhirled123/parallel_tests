@@ -25,6 +25,17 @@ module ParallelTests
       def self.runtime_log
         'tmp/parallel_runtime_rspec.log'
       end
+       
+      def self.rspec_failures
+        'log/rspec_failures.log'
+      end
+
+
+      def self.summarize_results(results)
+        puts open(rspec_failures).read
+        super(results)
+      end
+
 
       def self.test_file_name
         "spec"
