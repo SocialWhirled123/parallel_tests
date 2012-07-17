@@ -70,33 +70,17 @@ module ParallelTests
       end
 
       protected
-
-      # read output of the process and print in in chucks
+      
       def self.fetch_output(process, options)
         all = ''
         buffer = ''
-        timeout = options[:chunk_timeout] || 0.2
-        flushed = Time.now.to_f
 
-        while char = process.getc
-          char = (char.is_a?(Fixnum) ? char.chr : char) # 1.8 <-> 1.9
-          all << char
-
-          # print in chunks so large blocks stay together
-          now = Time.now.to_f
-          buffer << char
-          if flushed + timeout < now
-            $stdout.print buffer
-            $stdout.flush
-            buffer = ''
-            flushed = now
-          end
-        end
-
-        # print the remainder
-        $stdout.print buffer
-        $stdout.flush
-
+        while buffer = process.readpartial(1000000)
+          all << buffer
+          $stdout.print buffer
+          $stdout.flush
+        end rescue EOFError
+        
         all
       end
 
